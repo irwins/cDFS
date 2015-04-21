@@ -1,0 +1,10 @@
+
+[ClassVersion("1.0"), FriendlyName("cDFSnRoot")]
+class PSHOrg_cDFSnRoot : OMI_BaseResource
+{
+	[Required] String DomainName;
+	[Key] String DFSRootServer;
+	[Required] String DFSRootShare;
+	[Write, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+};
+
