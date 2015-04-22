@@ -1,7 +1,7 @@
 Import-Module xDSCResourceDesigner
 
 #Define DSC parameters
-$ResourceName = 'cDFSn'
+$ResourceName = 'cDFS'
 $FriendlyName = 'cDFSnRoot'
 $DomainName = New-xDscResourceProperty -Name DomainName -Type String -Attribute Required
 $DFSRootServer = New-xDscResourceProperty -Name DFSRootServer -Type String -Attribute Key
