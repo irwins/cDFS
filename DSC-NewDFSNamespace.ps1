@@ -5,7 +5,7 @@ configuration NewDFSNamespace {
         [string]$DFSRootServer
     )
     
-    Import-DscResource -ModuleName 'cDFSn','xSmbShare'
+    Import-DscResource -ModuleName 'cDFS','xSmbShare'
 
     Node $AllNodes.Where{$_.Role -eq 'Primary DFS'}.Nodename {             
         
@@ -29,7 +29,7 @@ configuration NewDFSNamespace {
             Name   = $(($DFSRootShare).ToUpper())
             Path = "C:\DFSRoots\$DFSRootShare"   
             ReadAccess = 'Everyone' 
-            Description = 'Default DFSNamespace $DFSRootShare share' 
+            Description = "Default DFSNamespace $DFSRootShare share"
             FolderEnumerationMode = 'AccessBased'
             DependsOn = '[File]RootFolder'
         } 
@@ -50,7 +50,7 @@ configuration NewDFSNamespace {
         cDFSnRoot DFSNamespace {
             Ensure = 'Present'
             DFSRootServer = $DFSRootServer
-            DFSRootShare = $DFSRootshare
+            DFSRootShare = $DFSRootShare
             DomainName = $DomainName  
             DependsOn = '[xSmbShare]RootShare', '[WindowsFeature]DFSNamespace'
         }
@@ -70,15 +70,18 @@ $ConfigData = @{
         }            
     )             
 }   
+# HashTable with parameters for a new DFSNamespace
+$paramNewDFSNamespace =  @{
+    ConfigurationData = $ConfigData
+    OutputPath = "$pwd\modules\NewDFSNamespace"
+    DomainName = $env:USERDOMAIN
+    DFSRootShare = 'home'
+    DFSRootServer = $env:COMPUTERNAME
+}
 
-NewDFSNameSpace  `
-    -ConfigurationData $ConfigData `
-    -OutputPath "$pwd\modules\NewDFSNamespace" `
-    -DomainName $env:USERDOMAIN `
-    -DFSRootshare 'apps' `
-    -DFSRootServer $env:COMPUTERNAME
+NewDFSNameSpace @paramNewDFSNamespace
 
 # Make sure that LCM is set to continue configuration after reboot            
 Set-DSCLocalConfigurationManager -Path .\modules\NewDFSNamespace –Verbose   
 
-Start-DscConfiguration -Path .\modules\NewDFSNamespace -Wait -Verbose -force
+Start-DscConfiguration -Path .\modules\NewDFSNamespace -Wait -Verbose -Force
